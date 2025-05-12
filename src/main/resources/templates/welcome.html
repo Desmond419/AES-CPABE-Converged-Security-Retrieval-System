@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>欢迎页</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <!-- 错误提示 -->
+    <div th:if="${errorMsg}"
+         class="alert alert-danger"
+         th:text="${errorMsg}">
+    </div>
+
+    <h3>欢迎, <span th:text="${user}">User</span></h3>
+    <div class="mb-3">
+        <a class="btn btn-secondary" href="/logout">退出登录</a>
+        <a class="btn btn-primary" href="/welcome">返回根目录</a>
+        <a class="btn btn-info" href="/createFolder">创建文件夹</a>
+        <a class="btn btn-warning" href="/fileNameEncryption">上传加密文件</a>
+        <a class="btn btn-success" href="/fileSearch">文件搜索</a>
+    </div>
+
+    <!-- 如果folderName为空，则显示所有folder，否则显示folder内文件 -->
+    <div th:if="${folderName}==null">
+        <h4>根目录下的文件夹列表</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>文件夹名</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="folder : ${folders}">
+                <!-- 无论用户是否有权限都列出来 -->
+                <td>
+                    <a th:href="@{/open_folder/{name}(name=${folder.name})}"
+                       th:text="${folder.name}">FolderName</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${folderName}!=null">
+        <h4>文件夹: <span th:text="${folderName}">folderName</span></h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>混淆文件名</th>
+                <th>大小 (bytes)</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="f : ${files}">
+                <!-- f.name = “混淆文件名” -->
+                <td th:text="${f.name}">encryptedFile</td>
+                <td th:text="${f.size}">1234</td>
+                <td>
+                    <!-- 注意: fileName=${f.filename} -->
+                    <a th:href="@{/viewFile/{folderName}/{fileName}(
+                        folderName=${folderName},
+                        fileName=${f.filename}
+                    )}">查看</a>
+
+                    <a th:href="@{/readFile(
+                        folderName=${folderName},
+                        fileName=${f.filename}
+                    )}">下载</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
